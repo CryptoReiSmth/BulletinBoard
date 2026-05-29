@@ -44,8 +44,10 @@ class RegistrationForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower()
-        if User.objects.filter(email=email).exists():
+
+        if User.objects.filter(email=email, is_active=True).exists():
             raise forms.ValidationError("Пользователь с таким e-mail уже существует.")
+
         return email
 
     def clean(self):
@@ -59,18 +61,24 @@ class RegistrationForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        user = User(
-            email=self.cleaned_data["email"],
-            username=self.cleaned_data["email"],
-            is_active=False,
+        email = self.cleaned_data["email"]
+
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={
+                "username": email,
+                "is_active": False,
+            },
         )
+
+        user.username = email
+        user.is_active = False
         user.set_password(self.cleaned_data["password1"])
 
         if commit:
             user.save()
 
         return user
-
 
 class EmailConfirmationForm(forms.Form):
     code = forms.CharField(
@@ -279,8 +287,19 @@ class AdDetailView(DetailView):
             except ValidationError as error:
                 messages.error(request, error.message)
             else:
-                messages.success(request, "Отклик отправлен автору объявления.")
+                send_mail(
+                    subject=f"Новый отклик на объявление: {self.object.title}",
+                    message=(
+                        f"Пользователь {request.user.email} оставил отклик на ваше объявление "
+                        f"«{self.object.title}».\n\n"
+                        f"Текст отклика:\n{response.text}"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[self.object.author.email],
+                    fail_silently=False,
+                )
 
+                messages.success(request, "Отклик отправлен автору объявления.")
             return redirect("board_app:ad_detail", slug=self.object.slug)
 
         context = self.get_context_data()

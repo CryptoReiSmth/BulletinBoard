@@ -44,6 +44,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True, blank=True)
     email = models.EmailField(_("email address"), unique=True)
+    is_active = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -199,5 +200,5 @@ class Response(models.Model):
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[self.author.email],
-            fail_silently=True,
+            fail_silently=False,
         )
