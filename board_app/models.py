@@ -177,6 +177,18 @@ class Response(models.Model):
             if duplicate_exists.exists():
                 raise ValidationError("Вы уже оставляли отклик на это объявление.")
 
+    def accept(self):
+        self.status = self.Status.ACCEPTED
+        self.save(update_fields=["status"])
+
+        send_mail(
+            subject="Ваш отклик принят",
+            message=f"Ваш отклик на объявление «{self.ad.title}» был принят.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[self.author.email],
+            fail_silently=False,
+        )
+
     class Meta:
         verbose_name = "Отклик"
         verbose_name_plural = "Отклики"

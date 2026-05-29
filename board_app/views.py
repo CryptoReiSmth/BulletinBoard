@@ -22,6 +22,7 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
+from django.views.generic.detail import SingleObjectMixin
 
 from .models import Ad, EmailConfirmation, Response
 
@@ -79,6 +80,7 @@ class RegistrationForm(forms.ModelForm):
             user.save()
 
         return user
+
 
 class EmailConfirmationForm(forms.Form):
     code = forms.CharField(
@@ -400,7 +402,9 @@ class ResponseOwnerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         return response.ad.author_id == self.request.user.id
 
 
-class ResponseAcceptView(ResponseOwnerRequiredMixin, View):
+class ResponseAcceptView(ResponseOwnerRequiredMixin, SingleObjectMixin, View):
+    model = Response
+
     def post(self, request, *args, **kwargs):
         response = self.get_object()
 
@@ -409,6 +413,7 @@ class ResponseAcceptView(ResponseOwnerRequiredMixin, View):
         else:
             response.accept()
             messages.success(request, "Отклик принят. Пользователю отправлено уведомление.")
+
         return redirect("board_app:my_responses")
 
 
