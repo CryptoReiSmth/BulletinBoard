@@ -272,34 +272,33 @@ class AdDetailView(DetailView):
 
         if self.object.author_id == request.user.id:
             messages.error(request, "Нельзя оставлять отклик на собственное объявление.")
-            return redirect(self.object.get_absolute_url() if hasattr(self.object, "get_absolute_url") else reverse(
-                "board_app:ad_detail", kwargs={"slug": self.object.slug}))
+            return redirect("board_app:ad_detail", slug=self.object.slug)
+
+        if Response.objects.filter(ad=self.object, author=request.user).exists():
+            messages.error(request, "Вы уже оставляли отклик на это объявление.")
+            return redirect("board_app:ad_detail", slug=self.object.slug)
 
         if form.is_valid():
-            response = form.save(commit=False)
-            response.ad = self.object
-            response.author = request.user
+            response = Response(
+                ad=self.object,
+                author=request.user,
+                text=form.cleaned_data["text"],
+            )
+            response.save()
 
-            try:
-                response.save()
-            except IntegrityError:
-                messages.error(request, "Вы уже оставляли отклик на это объявление.")
-            except ValidationError as error:
-                messages.error(request, error.message)
-            else:
-                send_mail(
-                    subject=f"Новый отклик на объявление: {self.object.title}",
-                    message=(
-                        f"Пользователь {request.user.email} оставил отклик на ваше объявление "
-                        f"«{self.object.title}».\n\n"
-                        f"Текст отклика:\n{response.text}"
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[self.object.author.email],
-                    fail_silently=False,
-                )
+            send_mail(
+                subject=f"Новый отклик на объявление: {self.object.title}",
+                message=(
+                    f"Пользователь {request.user.email} оставил отклик на ваше объявление "
+                    f"«{self.object.title}».\n\n"
+                    f"Текст отклика:\n{response.text}"
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.object.author.email],
+                fail_silently=False,
+            )
 
-                messages.success(request, "Отклик отправлен автору объявления.")
+            messages.success(request, "Отклик отправлен автору объявления.")
             return redirect("board_app:ad_detail", slug=self.object.slug)
 
         context = self.get_context_data()

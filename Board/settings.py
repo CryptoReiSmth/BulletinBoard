@@ -128,4 +128,11 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 AUTH_USER_MODEL = 'board_app.User'
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "admin@bulletinboard.local"
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'xxxmatanalxxx'
+EMAIL_HOST_PASSWORD = 'ckmrqczqvwgtanss'
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = 'xxxmatanalxxx@yandex.ru'
+
