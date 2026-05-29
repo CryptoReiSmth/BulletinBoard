@@ -1,0 +1,30 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Фанатская доска объявлений MMORPG-сервера</h1>
+
+    <p>
+        Здесь игроки могут искать танков, хилов, ДД, мастеров профессий,
+        гилдмастеров, торговцев и других участников игрового мира.
+    </p>
+
+    <div class="actions">
+        <a class="button" href="{% url 'board_app:ad_list' %}">
+            Смотреть объявления
+        </a>
+
+        {% if user.is_authenticated %}
+            <a class="button secondary" href="{% url 'board_app:ad_create' %}">
+                Создать объявление
+            </a>
+        {% else %}
+            <a class="button secondary" href="{% url 'board_app:register' %}">
+                Зарегистрироваться
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

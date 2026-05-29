@@ -1,0 +1,21 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Новостная рассылка{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Новостная рассылка</h1>
+    <p class="muted">
+        Эта страница доступна только администраторам и staff-пользователям.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="actions">
+            <button type="submit">Отправить рассылку</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}
+    {% if object %}Редактирование объявления{% else %}Создание объявления{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>
+        {% if object %}
+            Редактирование объявления
+        {% else %}
+            Создание объявления
+        {% endif %}
+    </h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="actions">
+            <button type="submit">
+                {% if object %}Сохранить{% else %}Создать{% endif %}
+            </button>
+
+            {% if object %}
+                <a class="button secondary" href="{% url 'board_app:ad_detail' object.slug %}">
+                    Отмена
+                </a>
+            {% else %}
+                <a class="button secondary" href="{% url 'board_app:ad_list' %}">
+                    Отмена
+                </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

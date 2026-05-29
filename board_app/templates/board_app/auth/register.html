@@ -1,0 +1,22 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Регистрация</h1>
+    <p class="muted">
+        Введите e-mail и пароль. После отправки формы мы пришлём код подтверждения.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="actions">
+            <button type="submit">Зарегистрироваться</button>
+            <a class="button secondary" href="{% url 'login' %}">Уже есть аккаунт</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

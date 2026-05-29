@@ -1,0 +1,61 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}{{ ad.title }}{% endblock %}
+
+{% block content %}
+<article class="card">
+    <span class="badge">{{ ad.get_category_display }}</span>
+
+    <h1>{{ ad.title }}</h1>
+
+    <p class="muted">
+        Автор: {{ ad.author.email }} · создано {{ ad.created_at|date:"d.m.Y H:i" }}
+        {% if ad.updated_at %}
+            · обновлено {{ ad.updated_at|date:"d.m.Y H:i" }}
+        {% endif %}
+    </p>
+
+    <div class="ad-content">
+        {{ ad.content|safe }}
+    </div>
+
+    {% if user == ad.author %}
+        <div class="actions">
+            <a class="button" href="{% url 'board_app:ad_update' ad.slug %}">
+                Редактировать
+            </a>
+            <a class="button danger" href="{% url 'board_app:ad_delete' ad.slug %}">
+                Удалить
+            </a>
+        </div>
+    {% endif %}
+</article>
+
+{% if user.is_authenticated and user != ad.author %}
+    <section class="card">
+        <h2>Оставить отклик</h2>
+
+        {% if already_responded %}
+            <p class="muted">Вы уже оставили отклик на это объявление.</p>
+        {% else %}
+            <form method="post">
+                {% csrf_token %}
+                {{ response_form.as_p }}
+
+                <div class="actions">
+                    <button type="submit">Отправить отклик</button>
+                </div>
+            </form>
+        {% endif %}
+    </section>
+{% elif not user.is_authenticated %}
+    <section class="card">
+        <p>
+            Чтобы оставить отклик,
+            <a href="{% url 'login' %}">войдите</a>
+            или
+            <a href="{% url 'board_app:register' %}">зарегистрируйтесь</a>.
+        </p>
+    </section>
+{% endif %}
+{% endblock %}

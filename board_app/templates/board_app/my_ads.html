@@ -1,0 +1,54 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Мои объявления{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Мои объявления</h1>
+
+    <div class="actions">
+        <a class="button" href="{% url 'board_app:ad_create' %}">
+            Создать объявление
+        </a>
+    </div>
+</div>
+
+{% if ads %}
+    {% for ad in ads %}
+        <article class="card">
+            <span class="badge">{{ ad.get_category_display }}</span>
+
+            <h2>
+                <a href="{% url 'board_app:ad_detail' ad.slug %}">
+                    {{ ad.title }}
+                </a>
+            </h2>
+
+            <p class="muted">
+                {{ ad.created_at|date:"d.m.Y H:i" }}
+                · {% if ad.is_published %}опубликовано{% else %}черновик{% endif %}
+            </p>
+
+            <p>{{ ad.content|striptags|truncatechars:220 }}</p>
+
+            <div class="actions">
+                <a class="button secondary" href="{% url 'board_app:ad_detail' ad.slug %}">
+                    Открыть
+                </a>
+                <a class="button" href="{% url 'board_app:ad_update' ad.slug %}">
+                    Редактировать
+                </a>
+                <a class="button danger" href="{% url 'board_app:ad_delete' ad.slug %}">
+                    Удалить
+                </a>
+            </div>
+        </article>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <p>У вас пока нет объявлений.</p>
+    </div>
+{% endif %}
+
+{% include "board_app/includes/pagination.html" %}
+{% endblock %}

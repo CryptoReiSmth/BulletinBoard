@@ -1,0 +1,27 @@
+{% if is_paginated %}
+<nav class="pagination">
+    {% if page_obj.has_previous %}
+        <a class="button secondary" href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_ad %}&ad={{ selected_ad }}{% endif %}">
+            Первая
+        </a>
+
+        <a class="button secondary" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_ad %}&ad={{ selected_ad }}{% endif %}">
+            Назад
+        </a>
+    {% endif %}
+
+    <span class="muted">
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a class="button secondary" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_ad %}&ad={{ selected_ad }}{% endif %}">
+            Вперёд
+        </a>
+
+        <a class="button secondary" href="?page={{ page_obj.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_ad %}&ad={{ selected_ad }}{% endif %}">
+            Последняя
+        </a>
+    {% endif %}
+</nav>
+{% endif %}

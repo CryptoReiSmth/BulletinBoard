@@ -1,0 +1,21 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Подтверждение e-mail{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Подтверждение e-mail</h1>
+    <p class="muted">
+        Введите шестизначный код, который мы отправили на вашу почту.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="actions">
+            <button type="submit">Подтвердить регистрацию</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

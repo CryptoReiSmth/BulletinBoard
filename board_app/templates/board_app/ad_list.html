@@ -1,0 +1,63 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Объявления{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Объявления</h1>
+
+    <form class="filter-form" method="get">
+        <div>
+            <label for="category">Категория</label>
+            <select name="category" id="category">
+                <option value="">Все категории</option>
+                {% for value, label in categories %}
+                    <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">Фильтровать</button>
+
+        {% if selected_category %}
+            <a class="button secondary" href="{% url 'board_app:ad_list' %}">Сбросить</a>
+        {% endif %}
+    </form>
+</div>
+
+{% if ads %}
+    <div class="grid">
+        {% for ad in ads %}
+            <article class="card">
+                <span class="badge">{{ ad.get_category_display }}</span>
+
+                <h2>
+                    <a href="{% url 'board_app:ad_detail' ad.slug %}">
+                        {{ ad.title }}
+                    </a>
+                </h2>
+
+                <p class="muted">
+                    Автор: {{ ad.author.email }} · {{ ad.created_at|date:"d.m.Y H:i" }}
+                </p>
+
+                <p>{{ ad.content|striptags|truncatechars:180 }}</p>
+
+                <div class="actions">
+                    <a class="button secondary" href="{% url 'board_app:ad_detail' ad.slug %}">
+                        Подробнее
+                    </a>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <p>Объявлений пока нет.</p>
+    </div>
+{% endif %}
+
+{% include "board_app/includes/pagination.html" %}
+{% endblock %}

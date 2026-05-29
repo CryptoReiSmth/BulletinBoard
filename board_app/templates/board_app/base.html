@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}MMORPG Bulletin Board{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --bg: #111827;
+            --card: #1f2937;
+            --muted: #9ca3af;
+            --text: #f9fafb;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --border: #374151;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            width: min(1100px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .header {
+            border-bottom: 1px solid var(--border);
+            background: #0f172a;
+        }
+
+        .nav {
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .main {
+            padding: 32px 0 56px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(245, 158, 11, .15);
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .button,
+        button,
+        input[type="submit"] {
+            display: inline-block;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            background: var(--accent);
+            color: #111827;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover,
+        button:hover,
+        input[type="submit"]:hover {
+            background: var(--accent-dark);
+            text-decoration: none;
+        }
+
+        .button.secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .button.danger,
+        button.danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .button.success,
+        button.success {
+            background: var(--success);
+            color: #052e16;
+        }
+
+        form p {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #111827;
+            color: var(--text);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+        }
+
+        .message.success {
+        border-color: var(--success);
+        }
+
+        .message.error {
+            border-color: var(--danger);
+        }
+
+        .message.warning {
+            border-color: var(--accent);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 14px;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .ad-content img,
+        .ad-content iframe,
+        .ad-content video {
+            max-width: 100%;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 12px;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-form > div {
+            min-width: 240px;
+            flex: 1;
+        }
+
+        .footer {
+            padding: 24px 0;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<header class="header">
+    <div class="container nav">
+        <a class="brand" href="{% url 'board_app:ad_list' %}">MMORPG Bulletin Board</a>
+
+        <nav class="nav-links">
+            <a href="{% url 'board_app:ad_list' %}">Объявления</a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'board_app:ad_create' %}">Создать</a>
+                <a href="{% url 'board_app:my_ads' %}">Мои объявления</a>
+                <a href="{% url 'board_app:my_responses' %}">Отклики</a>
+
+                {% if user.is_staff %}
+                    <a href="{% url 'board_app:newsletter' %}">Рассылка</a>
+                {% endif %}
+
+                <span class="muted">{{ user.email }}</span>
+                <a href="{% url 'logout' %}">Выйти</a>
+            {% else %}
+                <a href="{% url 'board_app:register' %}">Регистрация</a>
+                <a href="{% url 'login' %}">Войти</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main class="main">
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        Фанатская доска объявлений MMORPG-сервера.
+    </div>
+</footer>
+</body>
+</html>

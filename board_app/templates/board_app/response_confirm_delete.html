@@ -1,0 +1,31 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Удаление отклика{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Удалить отклик?</h1>
+
+    <p>
+        Вы действительно хотите удалить отклик пользователя
+        <strong>{{ object.author.email }}</strong>
+        на объявление
+        <strong>«{{ object.ad.title }}»</strong>?
+    </p>
+
+    <blockquote class="muted">
+        {{ object.text|linebreaksbr }}
+    </blockquote>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="actions">
+            <button class="danger" type="submit">Да, удалить</button>
+            <a class="button secondary" href="{% url 'board_app:my_responses' %}">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

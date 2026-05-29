@@ -1,0 +1,25 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Удаление объявления{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Удалить объявление?</h1>
+
+    <p>
+        Вы действительно хотите удалить объявление
+        <strong>«{{ object.title }}»</strong>?
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="actions">
+            <button class="danger" type="submit">Да, удалить</button>
+            <a class="button secondary" href="{% url 'board_app:ad_detail' object.slug %}">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

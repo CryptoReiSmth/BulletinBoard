@@ -1,0 +1,70 @@
+{% extends "board_app/base.html" %}
+
+{% block title %}Отклики на мои объявления{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Отклики на мои объявления</h1>
+
+    <form class="filter-form" method="get">
+        <div>
+            <label for="ad">Фильтр по объявлению</label>
+            <select name="ad" id="ad">
+                <option value="">Все объявления</option>
+                {% for ad in my_ads %}
+                    <option value="{{ ad.id }}" {% if selected_ad == ad.id|stringformat:"s" %}selected{% endif %}>
+                        {{ ad.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">Фильтровать</button>
+
+        {% if selected_ad %}
+            <a class="button secondary" href="{% url 'board_app:my_responses' %}">
+                Сбросить
+            </a>
+        {% endif %}
+    </form>
+</div>
+
+{% if responses %}
+    {% for response in responses %}
+        <article class="card">
+            <h2>
+                Отклик на
+                <a href="{% url 'board_app:ad_detail' response.ad.slug %}">
+                    {{ response.ad.title }}
+                </a>
+            </h2>
+
+            <p class="muted">
+                От: {{ response.author.email }} · {{ response.created_at|date:"d.m.Y H:i" }}
+                · статус: {{ response.get_status_display }}
+            </p>
+
+            <p>{{ response.text|linebreaksbr }}</p>
+
+            <div class="actions">
+                {% if response.status != response.Status.ACCEPTED %}
+                    <form method="post" action="{% url 'board_app:response_accept' response.pk %}">
+                        {% csrf_token %}
+                        <button class="success" type="submit">Принять</button>
+                    </form>
+                {% endif %}
+
+                <a class="button danger" href="{% url 'board_app:response_delete' response.pk %}">
+                    Удалить
+                </a>
+            </div>
+        </article>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <p>Откликов пока нет.</p>
+    </div>
+{% endif %}
+
+{% include "board_app/includes/pagination.html" %}
+{% endblock %}
